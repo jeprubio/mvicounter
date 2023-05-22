@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.rumosoft.mvicounter.presentation.action.CounterIntent
 import com.rumosoft.mvicounter.presentation.action.CounterIntent.Decrement
 import com.rumosoft.mvicounter.presentation.action.CounterIntent.Increment
 import com.rumosoft.mvicounter.presentation.model.CounterState
@@ -48,16 +49,14 @@ fun MviCounterScreen(
     val uiState by viewModel.state.collectAsState()
     MviCounter(
         uiState = uiState,
-        doOnIncrement = { viewModel.dispatch(Increment) },
-        doOnDecrement = { viewModel.dispatch(Decrement) },
+        onEvent = { counterIntent: CounterIntent -> viewModel.dispatch(counterIntent) }
     )
 }
 
 @Composable
 fun MviCounter(
     uiState: CounterState,
-    doOnIncrement: () -> Unit,
-    doOnDecrement: () -> Unit,
+    onEvent: (CounterIntent) -> Unit,
 ) {
     Column(
         modifier = Modifier.padding(16.dp),
@@ -68,11 +67,11 @@ fun MviCounter(
         Text("Counter: ${uiState.counter}")
         Text("Loading: ${uiState.loading}")
 
-        Button(onClick = doOnIncrement) {
+        Button(onClick = { onEvent(Increment) }) {
             Text("Increment")
         }
 
-        Button(onClick = doOnDecrement) {
+        Button(onClick = { onEvent(Decrement) }) {
             Text("Decrement")
         }
     }
@@ -84,8 +83,7 @@ fun DefaultPreview() {
     MviCounterTheme {
         MviCounter(
             CounterState(counter = 2),
-            doOnIncrement = {},
-            doOnDecrement = {},
+            onEvent = { /* no-op */ },
         )
     }
 }

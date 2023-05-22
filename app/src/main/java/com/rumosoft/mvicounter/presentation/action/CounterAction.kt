@@ -6,13 +6,12 @@ sealed interface CounterAction {
 }
 
 sealed interface CounterIntent {
-    object Increment : CounterIntent
-    object Decrement : CounterIntent
-}
+    fun toAction(): CounterAction
+    object Increment : CounterIntent {
+        override fun toAction(): CounterAction = CounterAction.Increment
+    }
 
-fun CounterIntent.toAction(): CounterAction {
-    return when (this) {
-        CounterIntent.Increment -> CounterAction.Increment
-        CounterIntent.Decrement -> CounterAction.Decrement
+    object Decrement : CounterIntent {
+        override fun toAction(): CounterAction = CounterAction.Decrement
     }
 }
